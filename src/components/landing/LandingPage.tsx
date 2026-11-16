@@ -10,6 +10,35 @@ import { buildLeadWhatsAppUrl, saveLead, type CapturedLead } from "./leads";
 type View = "dueno" | "comensal";
 
 const PROTOTYPE_URL = "https://bocadoo.onrender.com/#prototipo";
+const APK_URL =
+  "https://drive.google.com/file/d/1qNzS_MmZ2aHBr0HOSJD5Gzfml-GtW-fM/view?usp=drive_link";
+
+interface FooterQrItem {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  linkLabel: string;
+  external?: boolean;
+}
+
+const FOOTER_QRS: FooterQrItem[] = [
+  {
+    id: "prototype",
+    url: PROTOTYPE_URL,
+    title: "Pruébalo en tu celular",
+    description: "Escanea el código QR para abrir el prototipo de Bocadoo.",
+    linkLabel: PROTOTYPE_URL.replace("https://", ""),
+  },
+  {
+    id: "apk",
+    url: APK_URL,
+    title: "Descarga la app Android (APK)",
+    description: "Escanea el código QR para descargar la APK de Bocadoo.",
+    linkLabel: "Descargar APK en Google Drive",
+    external: true,
+  },
+];
 
 /** Landing de Bocadoo (diseño de Claude Design). Los estilos viven en landing.css bajo `.landing`. */
 export function LandingPage() {
@@ -1374,21 +1403,33 @@ export function LandingPage() {
             </div>
           </div>
           <div className="foot-qr">
-            <div className="foot-qr-code">
-              <QRCodeSVG
-                value={PROTOTYPE_URL}
-                size={144}
-                level="M"
-                marginSize={1}
-                fgColor={QR_FOREGROUND}
-                bgColor={QR_BACKGROUND}
-              />
-            </div>
-            <div>
-              <h4>Pruébalo en tu celular</h4>
-              <p>Escanea el código QR para abrir el prototipo de Bocadoo.</p>
-              <a href={PROTOTYPE_URL}>{PROTOTYPE_URL.replace("https://", "")}</a>
-            </div>
+            {FOOTER_QRS.map((item) => (
+              <div key={item.id} className="foot-qr-item">
+                <div className="foot-qr-code">
+                  <QRCodeSVG
+                    value={item.url}
+                    size={144}
+                    level="M"
+                    marginSize={1}
+                    fgColor={QR_FOREGROUND}
+                    bgColor={QR_BACKGROUND}
+                    title={item.title}
+                  />
+                </div>
+                <div>
+                  <h4>{item.title}</h4>
+                  <p>{item.description}</p>
+                  <a
+                    href={item.url}
+                    {...(item.external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                  >
+                    {item.linkLabel}
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="foot-bot">
             <span>
